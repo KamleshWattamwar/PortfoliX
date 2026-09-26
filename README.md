@@ -49,7 +49,127 @@ All mathematical computations are executed inside `backend/services/risk_engine.
 
 ---
 
-## 🏗️ Architecture & Project Structure
+## 🏗️ System Architecture
+
+PortfoliX is built with a decoupled client-server architecture featuring a React SPA frontend, a FastAPI micro-backend, a vectorized quantitative finance engine, and a resilient market data caching pipeline.
+
+### 📐 High-Level Architecture Diagram
+
+```mermaid
+flowchart TB
+    subgraph External[" 🌐 External Data & Ingestion "]
+        YF["📈 Yahoo Finance API<br/>(NSE/BSE EOD Feeds & ^NSEI Benchmark)"]
+        CSV["📄 Broker CSV Files<br/>(Zerodha, Upstox, etc.)"]
+    end
+
+    subgraph Frontend[" 🖥️ Frontend Layer (React 18 + Vite) "]
+        UI_Nav["🧭 Persistent Sidebar Navigation<br/>(React Router DOM)"]
+        
+        subgraph Views["Dashboard Views"]
+            V_Port["📊 /portfolio<br/>Consolidated Holdings & Value Summary"]
+            V_Risk["⚡ /risk<br/>Volatility, Beta & Sharpe Ratio"]
+            V_Corr["🔗 /correlation<br/>Interactive Cross-Asset Heatmap"]
+            V_DD["📉 /drawdown<br/>Historical Peak-to-Trough Trajectory"]
+        end
+
+        subgraph Components["Interactive Components & Charts"]
+            C_Pie["🥧 Allocation Pie Chart (Recharts)"]
+            C_Heat["🔥 Correlation Heatmap Matrix"]
+            C_DD["📈 Drawdown Area Chart (Recharts)"]
+            C_Modals["📝 Add Holding & CSV Upload Modals"]
+            C_Table["📋 Consolidated Lots Table"]
+        end
+
+        API_Client["🔌 Axios API Client<br/>(Error Interceptors & Typing)"]
+    end
+
+    subgraph Backend[" ⚙️ Backend Layer (FastAPI) "]
+        Main["🚀 FastAPI Core Application<br/>(CORS, Exception Handlers)"]
+        
+        subgraph Routers["API Routers"]
+            R_Holdings["📦 /holdings<br/>CRUD, CSV Parser, Demo Loader, Lot Consolidator"]
+            R_Risk["🧮 /portfolio/*<br/>Summary, Risk Metrics, Correlation, Drawdown"]
+        end
+
+        subgraph Services["Computation & Data Services"]
+            MktData["🛡️ Market Data Service (market_data.py)<br/>• Ticker Normalizer (.NS Suffix)<br/>• Dual-Layer Fetcher (v8 Direct + Fallback)<br/>• 15-Minute In-Memory TTL Cache"]
+            
+            subgraph RiskEngine["⚡ Quantitative Risk Engine (risk_engine.py)"]
+                Calc_Ret["Daily Arithmetic Returns Matrix"]
+                Calc_Vol["Annualized Volatility (σ × √252)"]
+                Calc_Beta["Benchmark Beta vs NIFTY 50 (^NSEI)"]
+                Calc_Sharpe["Annualized Sharpe Ratio (7% G-Sec Rf)"]
+                Calc_DD["Cumulative Peak-to-Trough Drawdown"]
+                Calc_Corr["Pairwise Pearson Correlation Matrix"]
+            end
+        end
+
+        subgraph Storage[" 💾 Data Persistence Layer "]
+            ORM["SQLAlchemy ORM (models.py)"]
+            DB[("🗄️ SQLite Database<br/>(portfolix.db)")]
+        end
+    end
+
+    %% Connections
+    CSV -->|Drag & Drop Import| C_Modals
+    UI_Nav --> Views
+    Views --- Components
+    Components --> API_Client
+
+    API_Client -->|HTTP / JSON REST API| Main
+    Main --> Routers
+    
+    R_Holdings --> ORM
+    R_Holdings --> MktData
+    R_Risk --> ORM
+    R_Risk --> MktData
+    R_Risk --> RiskEngine
+
+    ORM --> DB
+    MktData <-->|Fetch & Cache EOD Feeds| YF
+    RiskEngine <-->|Cleaned Price Time Series| MktData
+```
+
+---
+
+### 🔄 End-to-End Data & Calculation Flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as 👤 Investor / Client
+    participant UI as 🖥️ React Dashboard
+    participant API as 🚀 FastAPI Router
+    participant DB as 🗄️ SQLite DB
+    participant Cache as 🛡️ Market Data Cache
+    participant YF as 📈 Yahoo Finance
+    participant Math as ⚡ Risk Engine (NumPy/Pandas)
+
+    User->>UI: Navigate to /risk, /correlation, or /drawdown
+    UI->>API: GET /portfolio/risk (or /correlation / /drawdown)
+    API->>DB: Query user holding lots & aggregate quantities
+    DB-->>API: Active holding lots (Ticker, Qty, Buy Price)
+    
+    API->>Cache: Request 1-Year adjusted close prices for portfolio + ^NSEI
+    alt Cache Miss or Expired (>15m)
+        Cache->>YF: Fetch historical EOD prices & benchmark feed
+        YF-->>Cache: 252-day price time-series
+        Cache->>Cache: Store in TTL memory cache
+    else Cache Hit (<15m)
+        Cache-->>API: Return cached price matrices
+    end
+    Cache-->>API: Aligned historical price matrix & live CMPs
+    
+    API->>Math: Pass prices, current weights, and ^NSEI returns
+    Note over Math: Compute Daily Returns, Covariance Matrix, Portfolio Beta, Volatility, Sharpe & Drawdowns
+    Math-->>API: Quant risk payload (Portfolio & Individual metrics)
+    API-->>UI: JSON Response with risk metrics & matrix
+    UI-->>User: Render interactive Recharts, Glassmorphism KPIs & Correlation Heatmap
+```
+
+---
+
+### 📁 Project Structure
 
 ```
 PortfoliX/
