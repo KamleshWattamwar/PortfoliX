@@ -12,13 +12,17 @@ import {
   Trash2, 
   RefreshCw, 
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  LogOut,
+  User
 } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
+import { useAuth } from '../context/AuthContext';
 import HoldingsFormModal from '../components/HoldingsFormModal';
 import CsvUploadModal from '../components/CsvUploadModal';
 
 export default function DashboardLayout() {
+  const { user, logout } = useAuth();
   const { 
     holdings, 
     hasHoldings, 
@@ -112,8 +116,29 @@ export default function DashboardLayout() {
           ))}
         </nav>
 
-        {/* Sidebar Footer / Portfolio Stats */}
+        {/* Sidebar Footer / Portfolio Stats & User Account */}
         <div className="sidebar-footer">
+          {/* User Account Info */}
+          {user && (
+            <div className="sidebar-user" title={`Logged in as ${user.email}`}>
+              <div className="sidebar-user-avatar">
+                {user.email ? user.email.charAt(0).toUpperCase() : <User size={16} />}
+              </div>
+              <div className="sidebar-user-info">
+                <span className="sidebar-user-name">{user.email || 'Authenticated User'}</span>
+                <span className="sidebar-user-badge">PRO Session</span>
+              </div>
+              <button
+                type="button"
+                className="btn-icon-logout"
+                onClick={logout}
+                title="Sign out of PortfoliX"
+              >
+                <LogOut size={15} />
+              </button>
+            </div>
+          )}
+
           <div className="portfolio-counter">
             <span className="counter-label">Active Positions</span>
             <span className="counter-value">{holdings.length}</span>

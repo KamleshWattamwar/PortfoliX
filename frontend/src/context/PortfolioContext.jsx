@@ -7,16 +7,23 @@ import {
   loadDemoPortfolio as apiLoadDemo, 
   importCsv as apiImportCsv 
 } from '../api/client';
+import { useAuth } from './AuthContext';
 
 const PortfolioContext = createContext(null);
 
 export function PortfolioProvider({ children }) {
+  const { isAuthenticated } = useAuth();
   const [holdings, setHoldings] = useState([]);
-  const [holdingsLoading, setHoldingsLoading] = useState(true);
+  const [holdingsLoading, setHoldingsLoading] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [actionLoading, setActionLoading] = useState(false);
 
   const fetchHoldings = useCallback(async () => {
+    if (!isAuthenticated) {
+      setHoldings([]);
+      setHoldingsLoading(false);
+      return;
+    }
     setHoldingsLoading(true);
     try {
       const data = await getHoldings();
@@ -26,11 +33,12 @@ export function PortfolioProvider({ children }) {
     } finally {
       setHoldingsLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     fetchHoldings();
   }, [fetchHoldings, refreshTrigger]);
+
 
   const triggerRefresh = useCallback(() => {
     setRefreshTrigger(prev => prev + 1);

@@ -2,6 +2,8 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+export const TOKEN_KEY = 'portfolix_token';
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
@@ -9,6 +11,60 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// Attach the JWT to every outgoing request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// If the token is missing, expired or invalid, clear it and tell the app to log out
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const isLoginCall = error.config?.url?.includes('/auth/login');
+    if (error.response?.status === 401 && !isLoginCall) {
+      localStorage.removeItem(TOKEN_KEY);
+      window.dispatchEvent(new Event('auth:logout'));
+    }
+    return Promise.reject(error);
+  }
+);
+
+// --- Auth ---
+
+export const registerUser = async (email, password) => {
+  const response = await api.post('/auth/register', { email, password });
+  return response.data;
+};
+
+export const loginUser = async (email, password) => {
+  // The backend login uses the OAuth2 form format, so the email goes in "username"
+  const body = new URLSearchParams({ username: email, password });
+  const response = await api.post('/auth/login', body, {
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  });
+  return response.data; // { access_token, token_type }
+};
+
+export const getCurrentUser = async () => {
+  const response = await api.get('/auth/me');
+  return response.data; // { id, email }
+};
+
+
+// --- Holdings ---
+
+export const searchTickers = async (query) => {
+  if (!query || !query.trim()) return [];
+  const response = await api.get(`/holdings/search-ticker`, {
+    params: { q: query.trim() },
+  });
+  return response.data;
+};
 
 export const getHoldings = async () => {
   const response = await api.get('/holdings');
@@ -50,6 +106,8 @@ export const loadDemoPortfolio = async () => {
   const response = await api.post('/holdings/demo');
   return response.data;
 };
+
+// --- Portfolio analytics ---
 
 export const getPortfolioSummary = async () => {
   const response = await api.get('/portfolio/summary');
