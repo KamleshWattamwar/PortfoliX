@@ -6,8 +6,9 @@ Initializes database, CORS, route handlers, and health endpoints.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend import models  # noqa: F401  (ensures User and Holding tables are registered)
 from backend.database import Base, engine
-from backend.routers import holdings, risk
+from backend.routers import auth, holdings, risk
 
 # Initialize SQLite tables on startup
 Base.metadata.create_all(bind=engine)
@@ -36,6 +37,7 @@ app.add_middleware(
 )
 
 # Register routers
+app.include_router(auth.router)
 app.include_router(holdings.router)
 app.include_router(risk.router)
 
