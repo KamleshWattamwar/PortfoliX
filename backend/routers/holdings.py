@@ -13,10 +13,38 @@ from sqlalchemy.orm import Session
 from backend.auth import get_current_user
 from backend.database import get_db
 from backend.models import Holding, User
-from backend.schemas import CsvImportResponse, HoldingCreate, HoldingResponse
-from backend.services.market_data import normalize_ticker
+from backend.schemas import CsvImportResponse, HoldingCreate, HoldingResponse, TickerSearchResult
+from backend.services.market_data import (
+    fetch_single_ticker_data,
+    normalize_ticker,
+    resolve_ticker_symbol,
+    search_tickers,
+)
 
 router = APIRouter(prefix="/holdings", tags=["Holdings"])
+
+
+@router.get("/search-ticker", response_model=List[TickerSearchResult])
+def search_ticker_endpoint(
+    q: str,
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Search Indian and global equity symbols by company name, ticker, or keyword.
+    Returns matching symbols, exchange, and full name with instant caching.
+    """
+    if not q or not q.strip():
+        return []
+    results = search_tickers(q.strip(), limit=8)
+    return [
+        TickerSearchResult(
+            symbol=r["symbol"],
+            name=r["name"],
+            exchange=r["exchange"],
+            type=r.get("type", "Equity"),
+        )
+        for r in results
+    ]
 
 
 @router.get("", response_model=List[HoldingResponse])
@@ -39,8 +67,29 @@ def create_holding(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    """Add a new stock holding to the logged-in user's portfolio."""
+    """
+    Add a new stock holding to the logged-in user's portfolio.
+    Automatically normalizes and resolves company names to valid symbols (e.g. 'ADANI POWER' -> 'ADANIPOWER.NS').
+    """
     ticker_clean = normalize_ticker(holding_in.ticker)
+
+    # Validate ticker and attempt auto-resolution if initial lookup fails
+    series, latest_price, err = fetch_single_ticker_data(ticker_clean)
+    if err or latest_price is None:
+        resolved = resolve_ticker_symbol(holding_in.ticker)
+        if resolved and resolved != ticker_clean:
+            r_series, r_price, r_err = fetch_single_ticker_data(resolved)
+            if not r_err and r_price is not None:
+                ticker_clean = resolved
+                latest_price = r_price
+                err = None
+
+    # If the ticker is explicitly not found on the exchange, reject with helpful message
+    if err and ("not found" in err.lower() or "404" in err):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Stock ticker '{holding_in.ticker}' not found on exchange. Please search or select a valid symbol (e.g. ADANIPOWER.NS, RELIANCE.NS).",
+        )
 
     holding = Holding(
         user_id=current_user.id,

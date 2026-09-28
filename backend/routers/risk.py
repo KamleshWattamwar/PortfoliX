@@ -26,6 +26,7 @@ from backend.services.market_data import (
     DEFAULT_BENCHMARK,
     fetch_portfolio_market_data,
     fetch_single_ticker_data,
+    normalize_ticker,
 )
 from backend.services.risk_engine import (
     check_concentration_warnings,
@@ -68,7 +69,7 @@ def get_portfolio_summary(
     # Group holdings by normalized ticker
     ticker_groups: Dict[str, List[Holding]] = {}
     for h in holdings:
-        t_key = h.ticker.strip().upper()
+        t_key = normalize_ticker(h.ticker)
         ticker_groups.setdefault(t_key, []).append(h)
 
     tickers = list(ticker_groups.keys())
@@ -162,7 +163,8 @@ def get_portfolio_risk(
     # Calculate holding values for weighting
     holding_values = {}
     for h in holdings:
-        curr_price = latest_prices.get(h.ticker, h.buy_price)
+        norm_t = normalize_ticker(h.ticker)
+        curr_price = latest_prices.get(norm_t) or latest_prices.get(h.ticker, h.buy_price)
         holding_values[h.ticker] = holding_values.get(h.ticker, 0.0) + (h.quantity * curr_price)
 
     weights = compute_portfolio_weights(holding_values)
@@ -297,7 +299,8 @@ def get_portfolio_drawdown(
 
     holding_values = {}
     for h in holdings:
-        curr_price = latest_prices.get(h.ticker, h.buy_price)
+        norm_t = normalize_ticker(h.ticker)
+        curr_price = latest_prices.get(norm_t) or latest_prices.get(h.ticker, h.buy_price)
         holding_values[h.ticker] = holding_values.get(h.ticker, 0.0) + (h.quantity * curr_price)
 
     weights = compute_portfolio_weights(holding_values)

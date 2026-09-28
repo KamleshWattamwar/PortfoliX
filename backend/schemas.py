@@ -49,6 +49,13 @@ class CsvImportResponse(BaseModel):
     errors: List[str] = []
 
 
+class TickerSearchResult(BaseModel):
+    symbol: str
+    name: str
+    exchange: str
+    type: str = "Equity"
+
+
 # --- Portfolio Summary Schemas ---
 
 class HoldingSummaryItem(BaseModel):
