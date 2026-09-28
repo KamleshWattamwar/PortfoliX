@@ -6,6 +6,23 @@ from datetime import date, datetime
 from typing import Dict, List, Optional, Union
 from pydantic import BaseModel, Field
 
+# --- Auth Schemas ---
+
+class UserCreate(BaseModel):
+    email: str = Field(..., min_length=5, description="User email")
+    password: str = Field(..., min_length=6, max_length=72, description="Password (6-72 chars)")
+
+
+class UserOut(BaseModel):
+    id: int
+    email: str
+    model_config = {"from_attributes": True}
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
 
 # --- Holding Schemas ---
 
