@@ -664,10 +664,11 @@ body {
   position: relative;
   overflow: hidden;
   padding: 2rem 1.5rem;
-  background: linear-gradient(135deg, #1e3a5f 0%, #0f2040 40%, #1a4080 70%, #0d2d6b 100%);
+  background: #ffffff;
 }
 
 .auth-glow {
+  display: none;
   position: absolute;
   border-radius: 50%;
   filter: blur(90px);
@@ -732,20 +733,19 @@ body {
   font-size: 2rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: #ffffff;
+  color: #0f172a;
   line-height: 1.1;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.25);
 }
 
 .auth-title span {
-  background: linear-gradient(90deg, #7dd3fc, #bfdbfe);
+  background: linear-gradient(90deg, #2563eb, #0ea5e9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .auth-subtitle {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: #64748b;
   margin-top: 0.35rem;
 }
 
@@ -753,13 +753,13 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 20px;
   padding: 0.3rem 0.85rem;
   font-size: 0.72rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
+  color: #475569;
   margin-top: 0.75rem;
   backdrop-filter: blur(6px);
 }
@@ -946,7 +946,7 @@ body {
 
 .auth-footer-text {
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: #64748b;
   margin-top: 1.3rem;
   text-align: center;
 }
@@ -954,7 +954,7 @@ body {
 .auth-link-btn {
   background: none;
   border: none;
-  color: #93c5fd;
+  color: #2563eb;
   font-weight: 700;
   font-size: 0.82rem;
   cursor: pointer;
@@ -964,7 +964,7 @@ body {
 }
 
 .auth-link-btn:hover {
-  color: #bfdbfe;
+  color: #1d4ed8;
   text-decoration: underline;
 }
 
