@@ -10,6 +10,8 @@ from backend import models  # noqa: F401  (ensures User and Holding tables are r
 from backend.database import Base, engine
 from backend.routers import auth, holdings, risk
 
+from backend.routers import ws
+
 # Initialize SQLite tables on startup
 Base.metadata.create_all(bind=engine)
 
@@ -18,7 +20,7 @@ app = FastAPI(
     description="Quantitative risk analytics engine for Indian stock portfolios (NSE/BSE) using live market data.",
     version="1.0.0",
 )
-
+app.include_router(ws.router)
 # Configure CORS for Vite frontend dev server and production deployments
 origins = [
     "http://localhost:5173",
