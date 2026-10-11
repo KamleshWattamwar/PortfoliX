@@ -3,53 +3,56 @@
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![JWT Auth](https://img.shields.io/badge/Security-JWT_OAuth2-red?style=for-the-badge&logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
+[![WebSockets](https://img.shields.io/badge/Live_Data-WebSockets-orange?style=for-the-badge)](https://fastapi.tiangolo.com/advanced/websockets/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 
-**PortfoliX** is a full-stack, institutional-grade quantitative portfolio risk analytics platform tailored for Indian stock market investors (NSE/BSE). While standard Indian discount brokers (Zerodha, Upstox, Groww) display basic P&L and day-change metrics, they do not natively expose portfolio-level risk metrics.
+**PortfoliX** is a full-stack quantitative portfolio risk analytics platform for Indian stock market investors (NSE/BSE). Standard Indian discount brokers (Zerodha, Upstox, Groww) display basic P&L and day-change metrics, but they do not natively expose portfolio-level risk metrics.
 
-PortfoliX bridges this gap by computing real-time, mathematically rigorous quantitative risk statistics — **Annualized Volatility**, **Portfolio Beta (vs. NIFTY 50 `^NSEI`)**, **Annualized Sharpe Ratio**, **Maximum Peak-to-Trough Drawdown**, and **Pairwise Asset Cross-Correlation Matrices** — using live market data feeds backed by multi-tenant **JWT Authentication** and **Smart Ticker Validation**.
+PortfoliX bridges this gap by computing **Annualized Volatility**, **Portfolio Beta (vs. NIFTY 50 `^NSEI`)**, **Annualized Sharpe Ratio**, **Maximum Peak-to-Trough Drawdown**, and **Pairwise Asset Cross-Correlation Matrices** from market data, behind multi-user **JWT Authentication**, with **live portfolio valuation streamed over WebSockets**.
 
 ---
 
 ## 🌟 Key Features
 
-- **🔐 Multi-Tenant JWT Authentication**:
-  - Secure user registration and login (`/auth/register`, `/auth/login`) using OAuth2 Password Flow.
-  - Passwords hashed with `bcrypt` (`passlib`); stateless JWT tokens (`HS256`, 24-hour expiration) authorize all portfolio operations.
-  - Complete user isolation — each user's holdings and risk statistics are stored and computed independently.
+- **🔐 Multi-User JWT Authentication**:
+  - User registration and login (`/auth/register`, `/auth/login`) using the OAuth2 Password Flow.
+  - Passwords hashed with `bcrypt` (`passlib`); stateless JWT tokens (`HS256`, 24-hour expiry) authorize all portfolio operations.
+  - Per-user data isolation — every holding row belongs to a user, and every query is filtered by the logged-in user.
+
+- **📡 Live Price Streaming (WebSockets)**:
+  - JWT-authenticated `/ws/portfolio` endpoint. One shared background loop fetches each ticker once (10-second quote cache) and pushes every connected user only their own holdings' prices every 15 seconds.
+  - The React client reconnects automatically with exponential backoff (1s → 30s), sends a periodic heartbeat, and shows a **LIVE / CONNECTING** status badge.
+  - The holdings table and summary cards (current value, unrealized P&L, weights) recalculate from live prices. Risk metrics stay on REST because they are computed from historical data.
 
 - **⚡ Smart Ticker Normalization & Validation**:
-  - **Auto-Resolution & Alias Mapping**: Converts company names, abbreviations, or informal search terms (e.g. `ADANI POWER` $\to$ `ADANIPOWER.NS`, `SBI` $\to$ `SBIN.NS`, `TCS` $\to$ `TCS.NS`) to official exchange tickers.
-  - **Pre-Insertion Exchange Validation**: Queries market feeds before adding holdings to prevent invalid or non-existent tickers from corrupting portfolio calculations.
-  - **Purchase Price Integrity**: Strictly preserves the user's actual cost basis (`buy_price`), preventing accidental overwriting by current market price (CMP).
+  - Converts company names and informal terms (e.g. `ADANI POWER` → `ADANIPOWER.NS`, `SBI` → `SBIN.NS`, `TCS` → `TCS.NS`) to exchange tickers.
+  - Validates the ticker against the market feed before inserting a holding.
+  - Preserves the user's actual cost basis (`buy_price`); it is never overwritten by the market price.
 
 - **📊 Consolidated Portfolio Management**:
-  - Automatically consolidates multiple buy lots of the same stock into a single view showing total quantity, blended average buy price, and a lot badge (e.g. `2 lots`).
-  - Supports manual position entry, 1-click **⚡ NIFTY 50 Demo Portfolio** loader, live ticker autocomplete search, and broker CSV drag-and-drop import.
-  - Supports single-lot deletion and full ticker-level liquidation with confirmation modals.
+  - Consolidates multiple buy lots of the same stock into one row with total quantity, blended average buy price, and a lot badge (e.g. `2 lots`).
+  - Manual position entry, one-click **NIFTY 50 Demo Portfolio** loader, ticker autocomplete search, and broker CSV import.
+  - Single-ticker deletion and full portfolio reset, with confirmation prompts.
 
 - **📈 Quantitative Risk Analytics**:
-  - Computes value-weighted portfolio volatility, beta against the benchmark `^NSEI` (NIFTY 50), Sharpe ratio, and individual stock risk statistics.
-  - **Concentration Risk Alert**: Automatically flags any holding exceeding 30% of total portfolio value.
+  - Value-weighted portfolio volatility, beta against `^NSEI`, Sharpe ratio, and per-stock risk statistics.
+  - **Concentration Risk Alert** flags any holding above 30% of total portfolio value.
 
-- **🔗 Pairwise Correlation Heatmap**:
-  - Visual matrix displaying daily returns co-movement between holdings from -1.0 to +1.0.
+- **🔗 Pairwise Correlation Heatmap**: daily-returns co-movement between holdings, from -1.0 to +1.0.
 
-- **📉 Historical Drawdown Analysis**:
-  - Interactive Recharts visualization plotting the 1-year historical portfolio drawdown trajectory and worst peak-to-trough drop.
+- **📉 Historical Drawdown Analysis**: Recharts visualization of the 1-year portfolio drawdown and worst peak-to-trough drop.
 
-- **🧭 Persistent Sidebar Navigation**:
-  - Modern, responsive SPA layout with continuous multi-page routing via `react-router-dom`.
+- **🧭 Persistent Sidebar Navigation**: multi-page SPA layout using `react-router-dom`.
 
 ---
 
 ## 📐 Quantitative Financial Formulas
 
-All mathematical computations are executed inside `backend/services/risk_engine.py` as pure, stateless functions using a 252-day annual trading calendar and a default risk-free rate of 7.0% (approximate 10-year Indian Government Bond / G-Sec yield):
+All risk calculations live in `backend/services/risk_engine.py` as pure, stateless functions, using a 252-day trading year and a default risk-free rate of 7.0% (approximate 10-year Indian G-Sec yield):
 
-1. **Daily Log / Arithmetic Returns**:
+1. **Daily Returns**:
    $$\text{Return}_t = \frac{P_t - P_{t-1}}{P_{t-1}}$$
 2. **Annualized Volatility**:
    $$\sigma_{\text{annual}} = \sigma_{\text{daily}} \times \sqrt{252}$$
@@ -66,24 +69,53 @@ All mathematical computations are executed inside `backend/services/risk_engine.
 
 ## 🏗️ System Architecture
 
-PortfoliX uses a decoupled client-server architecture. The frontend React SPA communicates with a FastAPI microservice secured by JWT Bearer authentication, backed by a vectorized quantitative finance engine, market data cache, and SQLite persistence.
+PortfoliX uses a decoupled client-server architecture. The React SPA talks to a FastAPI backend over two channels: REST for portfolio data and risk analytics, and a WebSocket for live prices. Both are secured with the same JWT.
 
 ```mermaid
 graph TD
     Client["🖥️ React SPA Client<br/>(Vite + Recharts + React Router)"]
     Auth["🔐 JWT Auth Layer<br/>(OAuth2 / Bcrypt / HS256)"]
     API["🚀 FastAPI Core<br/>(Holdings & Risk Routers)"]
-    Engine["⚡ Risk Engine<br/>(NumPy / Pandas Vectorized Math)"]
+    WS["📡 WebSocket Endpoint<br/>(/ws/portfolio)"]
+    Feed["⚡ Live Price Feed<br/>(one shared loop, 15s push)"]
+    Engine["🧮 Risk Engine<br/>(NumPy / Pandas Vectorized Math)"]
     MktData["🛡️ Market Data Service<br/>(Ticker Validation & 15m Cache)"]
     DB[("🗄️ SQLite Database<br/>(Users & Holdings Tables)")]
-    YF["📈 Yahoo Finance API<br/>(NSE/BSE EOD Feeds)"]
+    YF["📈 Yahoo Finance API<br/>(NSE/BSE Market Data)"]
 
-    Client -->|HTTP + Bearer Token| Auth
+    Client -->|"HTTP + Bearer Token"| Auth
     Auth --> API
     API --> DB
     API --> MktData
     API --> Engine
-    MktData <-->|EOD Prices & Benchmark| YF
+    MktData <-->|"EOD Prices & Benchmark"| YF
+
+    Client <-->|"WebSocket + JWT"| WS
+    WS --> Feed
+    Feed -->|"user tickers"| DB
+    Feed <-->|"live quotes (10s cache)"| YF
+```
+
+### 🔄 Live Price Flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant UI as 🖥️ React Hook
+    participant WS as 📡 /ws/portfolio
+    participant Feed as ⚡ Live Feed
+    participant YF as 📈 Yahoo Finance
+
+    UI->>WS: Connect with JWT (?token=...)
+    WS->>WS: Validate token (close 1008 if invalid)
+    WS->>Feed: Register connection
+    loop Every 15 seconds (one shared loop)
+        Feed->>Feed: Collect tickers of all connected users
+        Feed->>YF: Fetch each stale ticker once
+        Feed-->>UI: PRICE_TICK with only that user's prices
+    end
+    Note over UI: Recalculate value, P&L and weights
+    Note over UI: On disconnect, retry after 1s, 2s, 4s... up to 30s
 ```
 
 ---
@@ -100,18 +132,20 @@ PortfoliX/
 │   ├── schemas.py                  # Pydantic request/response schemas
 │   ├── routers/
 │   │   ├── auth.py                 # Authentication endpoints (/register, /login, /me)
-│   │   ├── holdings.py             # CRUD, CSV import, demo loader, search, lot consolidator
-│   │   └── risk.py                 # Summary, risk metrics, correlation, drawdown endpoints
+│   │   ├── holdings.py             # CRUD, CSV import, demo loader, search
+│   │   ├── risk.py                 # Summary, risk metrics, correlation, drawdown endpoints
+│   │   └── ws.py                   # WebSocket endpoint (JWT check on connect)
 │   ├── services/
-│   │   ├── market_data.py          # Exchange ticker validation, alias mapper & 15m TTL cache
+│   │   ├── market_data.py          # Ticker validation, alias mapper & 15m TTL cache
+│   │   ├── live_feed.py            # Shared live price broadcaster (10s quote cache)
 │   │   └── risk_engine.py          # Pure quantitative math & matrix operations
 │   ├── test_risk_engine.py         # Unit tests for pure formulas
-│   ├── test_api_endpoints.py       # API & Auth integration tests
+│   ├── test_api_endpoints.py       # API integration tests
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
 │   │   ├── api/
-│   │   │   └── client.js           # Axios API service with Auth interceptors
+│   │   │   └── client.js           # Axios API service with auth interceptors
 │   │   ├── components/
 │   │   │   ├── AllocationPieChart.jsx
 │   │   │   ├── ConcentrationBanner.jsx
@@ -122,21 +156,27 @@ PortfoliX/
 │   │   │   ├── EmptyState.jsx
 │   │   │   ├── HoldingsFormModal.jsx
 │   │   │   ├── HoldingsTable.jsx
+│   │   │   ├── LiveBadge.jsx       # LIVE / CONNECTING status indicator
 │   │   │   ├── RiskTable.jsx
 │   │   │   └── SummaryCards.jsx
+│   │   ├── context/
+│   │   │   └── PortfolioContext.jsx
+│   │   ├── hooks/
+│   │   │   └── usePortfolioWebSocket.js  # WebSocket client: auto-reconnect + heartbeat
 │   │   ├── layouts/
-│   │   │   └── DashboardLayout.jsx # Persistent Sidebar navigation layout
+│   │   │   └── DashboardLayout.jsx # Persistent sidebar navigation layout
 │   │   ├── pages/
-│   │   │   ├── PortfolioPage.jsx   # /portfolio (Holdings & Summary)
-│   │   │   ├── RiskPage.jsx        # /risk (Risk Metrics)
-│   │   │   ├── CorrelationPage.jsx # /correlation (Heatmap)
-│   │   │   └── DrawdownPage.jsx    # /drawdown (Drawdown Curve)
+│   │   │   ├── PortfolioPage.jsx   # /portfolio (holdings & summary, live prices)
+│   │   │   ├── RiskPage.jsx        # /risk (risk metrics)
+│   │   │   ├── CorrelationPage.jsx # /correlation (heatmap)
+│   │   │   └── DrawdownPage.jsx    # /drawdown (drawdown curve)
 │   │   ├── App.jsx                 # Route definitions
 │   │   ├── main.jsx
 │   │   └── index.css               # Design system & dark glassmorphism styling
 │   ├── index.html
 │   ├── package.json
 │   └── vite.config.js
+├── pytest.ini
 └── README.md
 ```
 
@@ -148,171 +188,154 @@ PortfoliX/
 - **Python**: 3.11 or higher
 - **Node.js**: 18+ and `npm`
 
----
-
 ### 1. Backend Setup
 
 ```bash
-# Navigate to the project root
+# From the project root
 cd PortfoliX
 
 # Create and activate a virtual environment
 python -m venv venv
 
-# On Windows (PowerShell):
+# Windows (PowerShell):
 .\venv\Scripts\Activate.ps1
-# On Windows (CMD):
+# Windows (CMD):
 .\venv\Scripts\activate.bat
-# On macOS/Linux:
+# macOS/Linux:
 source venv/bin/activate
 
 # Install dependencies
 pip install -r backend/requirements.txt
 ```
 
-#### Environment Configuration
-Create a `.env` file in the project root:
+#### Secret key
 
-```env
-SECRET_KEY=your-custom-secure-secret-key-here
+The JWT signing key is read from the `SECRET_KEY` environment variable. If it is not set, the app falls back to a development-only key, so **always set your own before deploying**.
+
+```bash
+# Windows (PowerShell)
+$env:SECRET_KEY = "your-long-random-secret"
+
+# macOS/Linux
+export SECRET_KEY="your-long-random-secret"
 ```
-> **Note**: If `SECRET_KEY` is not set, a development fallback key is used. Set a strong secret key for production environments.
 
-Launch the server:
+Start the server:
 
 ```bash
 uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
 ```
-The API will run at `http://127.0.0.1:8000`. Interactive OpenAPI documentation is accessible at `http://127.0.0.1:8000/docs`.
 
----
+The API runs at `http://127.0.0.1:8000`. Interactive OpenAPI docs are at `http://127.0.0.1:8000/docs`.
 
-### 2. User Authentication & Token Retrieval
+### 2. Authentication
 
-PortfoliX requires a valid JWT token for protected portfolio operations.
+Register and log in from the app's UI, or call the API directly:
 
-#### Register a New User
 ```bash
+# Register
 curl -X POST http://127.0.0.1:8000/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email": "investor@example.com", "password": "SecurePassword123!"}'
-```
 
-#### Login & Obtain Access Token
-```bash
+# Login (OAuth2 form format: the email goes in "username")
 curl -X POST http://127.0.0.1:8000/auth/login \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "username=investor@example.com&password=SecurePassword123!"
 ```
-*Response:*
-```json
-{
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",
-  "token_type": "bearer"
-}
-```
 
-Include the returned token in the `Authorization` header for subsequent API calls:
+The response contains `access_token`. Send it on every protected request:
+
 ```text
 Authorization: Bearer <your_access_token>
 ```
 
----
-
 ### 3. Frontend Setup
 
 ```bash
-# Open a new terminal and navigate to frontend
+# In a new terminal
 cd PortfoliX/frontend
-
-# Install dependencies
 npm install
-
-# Start the Vite dev server
 npm run dev
 ```
-Open your browser and navigate to `http://localhost:5173`.
+
+Open `http://localhost:5173`. The frontend talks to `http://localhost:8000` by default; set `VITE_API_URL` to point it elsewhere.
 
 ---
 
-## 📡 REST API Reference
+## 📡 API Reference
 
 ### 🔐 Auth Endpoints
 | Method | Endpoint | Authorization | Description |
 |---|---|---|---|
 | `POST` | `/auth/register` | Public | Register a new user (`email`, `password`) |
-| `POST` | `/auth/login` | Public | OAuth2 password login, returns JWT token |
-| `GET` | `/auth/me` | Bearer Token | Get current authenticated user details |
+| `POST` | `/auth/login` | Public | OAuth2 password login, returns a JWT |
+| `GET` | `/auth/me` | Bearer Token | Current authenticated user |
 
 ### 📦 Holdings Endpoints
 | Method | Endpoint | Authorization | Description |
 |---|---|---|---|
-| `GET` | `/holdings` | Bearer Token | List all holding lots for logged-in user |
-| `POST` | `/holdings` | Bearer Token | Add holding (`ticker`, `quantity`, `buy_price`, `buy_date`). Pre-validates ticker on exchange. |
-| `GET` | `/holdings/search-ticker` | Bearer Token | Search Indian & global stocks (`?q=ADANI`) with exchange metadata |
-| `DELETE` | `/holdings/{id}` | Bearer Token | Delete a specific holding lot by ID |
+| `GET` | `/holdings` | Bearer Token | List all holding lots for the logged-in user |
+| `POST` | `/holdings` | Bearer Token | Add a holding (`ticker`, `quantity`, `buy_price`, `buy_date`); validates the ticker first |
+| `GET` | `/holdings/search-ticker` | Bearer Token | Search stocks by name or symbol (`?q=ADANI`) |
+| `DELETE` | `/holdings/{id}` | Bearer Token | Delete one holding lot by ID |
 | `DELETE` | `/holdings/by-ticker/{ticker}` | Bearer Token | Delete all lots for a ticker (e.g. `RELIANCE.NS`) |
-| `DELETE` | `/holdings/action/clear-all` | Bearer Token | Delete all holdings for current user |
-| `POST` | `/holdings/import-csv` | Bearer Token | Upload broker CSV (`Symbol, Quantity, Average Price`) |
-| `POST` | `/holdings/demo` | Bearer Token | Load standard NIFTY 50 demo holdings for testing |
+| `DELETE` | `/holdings/action/clear-all` | Bearer Token | Delete all holdings for the current user |
+| `POST` | `/holdings/import-csv` | Bearer Token | Upload a broker CSV (`Symbol, Quantity, Average Price`) |
+| `POST` | `/holdings/demo` | Bearer Token | Load NIFTY 50 demo holdings |
 
 ### 🧮 Portfolio Risk Endpoints
 | Method | Endpoint | Authorization | Description |
 |---|---|---|---|
-| `GET` | `/portfolio/summary` | Bearer Token | Consolidated portfolio values, total cost, CMP valuation, P&L |
-| `GET` | `/portfolio/risk` | Bearer Token | Volatility, Beta vs NIFTY 50, Sharpe Ratio, concentration flags |
+| `GET` | `/portfolio/summary` | Bearer Token | Consolidated holdings, invested capital, current value, P&L |
+| `GET` | `/portfolio/risk` | Bearer Token | Volatility, beta vs NIFTY 50, Sharpe ratio, concentration flags |
 | `GET` | `/portfolio/correlation` | Bearer Token | Pairwise returns correlation matrix |
-| `GET` | `/portfolio/drawdown` | Bearer Token | 1-year historical drawdown time series |
+| `GET` | `/portfolio/drawdown` | Bearer Token | 1-year historical drawdown series |
+
+### 📡 WebSocket Endpoint
+| Protocol | Endpoint | Authorization | Description |
+|---|---|---|---|
+| `WS` | `/ws/portfolio?token=<JWT>` | JWT in query string | Streams a `PRICE_TICK` message every 15s with prices for the user's holdings |
+
+Example message:
+
+```json
+{
+  "type": "PRICE_TICK",
+  "timestamp": "2026-10-11T19:25:29.439618+00:00",
+  "prices": { "RELIANCE.NS": 1170.3, "TCS.NS": 2156.0 }
+}
+```
+
+Connections with an invalid or missing token are closed with code `1008`. To try it from a browser console:
+
+```js
+const ws = new WebSocket("ws://127.0.0.1:8000/ws/portfolio?token=YOUR_TOKEN");
+ws.onmessage = (e) => console.log(e.data);
+```
 
 ---
 
 ## 🧪 Running Automated Tests
 
-Run the full automated test suite covering unit math and API integration:
-
 ```bash
 pytest backend/ -v
 ```
 
-Tests validate:
-- User registration, login, password hashing, and JWT authorization enforcement.
-- Ticker validation, alias resolution, and invalid ticker rejection (HTTP 400).
-- Pure mathematical formulas (volatility, beta, Sharpe ratio, maximum drawdown).
-- Portfolio weight sum integrity ($\sum w_i = 1.0$) and single-asset edge cases.
-- Broker CSV parser error handling and edge cases.
+The suite covers the pure risk formulas (volatility, beta, Sharpe, maximum drawdown), portfolio weight integrity, single-asset edge cases, and the API endpoints. The WebSocket endpoint does not have automated tests yet.
 
 ---
 
 ## 🛡️ Edge Cases & Fixes Handled
 
-- **Strict Ticker Validation**: Pre-checks exchange presence before adding holdings to prevent invalid or misformatted tickers from entering the database.
-- **Cost Basis Integrity**: User-entered `buy_price` is strictly preserved and never overwritten by current market price (CMP).
-- **Smart Alias Resolution**: Converts informal inputs like `ADANI POWER` or `SBI` into official exchange symbols (`ADANIPOWER.NS`, `SBIN.NS`).
-- **User Data Isolation**: JWT middleware guarantees that each user can only view, add, or delete their own portfolio positions.
-- **Market Data Fault Tolerance**: Dual-layer fetcher (Yahoo Finance chart API + `yfinance` fallback) with 15-minute TTL caching and negative caching for rapid failure handling.
-- **Single-Asset Portfolios**: Computes valid $1 \times 1$ correlation matrix and beta without division-by-zero errors.
-- **Malformed CSV Imports**: Gracefully validates required headers and numeric values with helpful HTTP 400 messages.
+- **Strict Ticker Validation**: checks the exchange before adding a holding, so invalid tickers never reach the database.
+- **Cost Basis Integrity**: user-entered `buy_price` is never overwritten by the market price.
+- **Smart Alias Resolution**: informal inputs like `ADANI POWER` or `SBI` resolve to exchange symbols.
+- **User Data Isolation**: every holdings and portfolio query is filtered by the authenticated user.
+- **Market Data Fault Tolerance**: dual-layer fetcher (Yahoo Finance chart API with a `yfinance` fallback), 15-minute TTL cache and negative caching for fast failure handling.
+- **Stream Resilience**: a failed live price fetch is logged and skipped, keeping the last known price; the client reconnects automatically after network drops.
+- **Single-Asset Portfolios**: valid 1×1 correlation matrix and beta without division-by-zero.
+- **Malformed CSV Imports**: required headers and numeric values are validated with clear HTTP 400 messages.
 
 ---
 
-## 💻 Contributing – Backend Guidelines
-
-When contributing to the backend:
-
-1. **Authentication Enforcement**: Ensure all new endpoints in portfolio routers pass `current_user: User = Depends(get_current_user)` to guarantee multi-tenant security.
-2. **Ticker Handling**: Use `normalize_ticker()` and `fetch_single_ticker_data()` from `backend.services.market_data` when handling input stock symbols.
-3. **Environment Security**: Never commit secret keys to version control. Use `.env` or set `SECRET_KEY` in environment variables.
-4. **Testing**: Add corresponding test cases in `backend/test_api_endpoints.py` for new API routes or edge cases, and run `pytest backend/ -v` before submitting pull requests.
-
----
-
-## 📌 Known Limitations & Roadmap
-
-- **Broker API Integration**: Uses Yahoo Finance market data feeds; production enterprise setups can integrate directly with Zerodha Kite Connect or Upstox API.
-- **Historical Horizon**: Calculates risk statistics over a 1-year lookback period using daily closing prices.
-- **Future Roadmap**:
-  - Social OAuth2 login (Google/GitHub).
-  - Multi-broker CSV parsers (Groww, AngelOne, ICICI Direct).
-  - Monte Carlo portfolio value simulations.
-  - "What-If" portfolio rebalancing and trade simulator.
-  - Sector-wise and market-cap exposure breakdown.
