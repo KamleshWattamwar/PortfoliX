@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { usePortfolioWebSocket } from '../hooks/usePortfolioWebSocket';
+import LiveBadge from '../components/LiveBadge';
 import { getPortfolioSummary, getPortfolioRisk } from '../api/client';
 import { usePortfolio } from '../context/PortfolioContext';
 import SummaryCards from '../components/SummaryCards';
@@ -7,9 +9,11 @@ import AllocationPieChart from '../components/AllocationPieChart';
 import EmptyState from '../components/EmptyState';
 import { RefreshCw, AlertCircle } from 'lucide-react';
 
+
 export default function PortfolioPage() {
   const { hasHoldings, refreshTrigger, deleteHoldingByTicker, loadDemo, actionLoading } = usePortfolio();
-  
+  const { prices, isConnected } = usePortfolioWebSocket(hasHoldings);
+
   const [summary, setSummary] = useState(null);
   const [risk, setRisk] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -45,6 +49,40 @@ export default function PortfolioPage() {
     fetchData();
   }, [fetchData, refreshTrigger]);
 
+  const liveHoldings = useMemo(() => {
+  if (!summary?.holdings) return null;
+
+  const updated = summary.holdings.map((h) => {
+    const price = prices[h.ticker] ?? h.current_price; // live price, else the REST one
+    const value = price * h.quantity;
+    const cost = h.buy_price * h.quantity;
+    return {
+      ...h,
+      current_price: price,
+      current_value: value,
+      pnl: value - cost,
+      pnl_percent: cost > 0 ? ((value - cost) / cost) * 100 : 0,
+    };
+  });
+
+  const total = updated.reduce((sum, h) => sum + h.current_value, 0);
+  return updated.map((h) => ({ ...h, weight: total > 0 ? h.current_value / total : 0 }));
+  }, [summary, prices]);
+
+  const liveSummary = useMemo(() => {
+  if (!summary || !liveHoldings) return summary;
+
+  const totalValue = liveHoldings.reduce((sum, h) => sum + h.current_value, 0);
+  const totalPnl = totalValue - summary.total_invested;
+
+  return {
+      ...summary,
+      total_current_value: totalValue,
+      total_pnl: totalPnl,
+      total_pnl_percent: summary.total_invested > 0 ? (totalPnl / summary.total_invested) * 100 : 0,
+    };
+  }, [summary, liveHoldings]);
+  
   if (!hasHoldings && !loading) {
     return (
       <EmptyState
@@ -57,13 +95,18 @@ export default function PortfolioPage() {
   }
 
   return (
-    <div className="page-container">
-      {error && (
-        <div className="badge badge-negative" style={{ padding: '0.8rem 1.25rem', fontSize: '0.85rem', width: '100%', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <AlertCircle size={18} />
-          <span>{error}</span>
-        </div>
-      )}
+  <div className="page-container">
+    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <LiveBadge isConnected={isConnected} />
+    </div>
+
+    {error && (
+      <div className="badge badge-negative" style={{ padding: '0.8rem 1.25rem', fontSize: '0.85rem', width: '100%', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        <AlertCircle size={18} />
+        <span>{error}</span>
+      </div>
+    )}
+
 
       {loading && !summary ? (
         <div className="loading-container">
@@ -73,7 +116,7 @@ export default function PortfolioPage() {
       ) : (
         <>
           {/* Summary Cards */}
-          <SummaryCards summary={summary} risk={risk} />
+          <SummaryCards summary={liveSummary} risk={risk} />
 
           {/* Allocation Donut & Holdings Table in split or vertical layout */}
           <div className="analytics-grid">
@@ -91,13 +134,13 @@ export default function PortfolioPage() {
                 </p>
               </div>
 
-              {summary?.holdings && (
+              {liveHoldings && (
                 <HoldingsTable
-                  holdings={summary.holdings}
-                  onDelete={deleteHoldingByTicker}
-                  loading={actionLoading}
+                holdings={liveHoldings}
+                onDelete={deleteHoldingByTicker}
+                loading={actionLoading}
                 />
-              )}
+)}
             </div>
           </div>
         </>
