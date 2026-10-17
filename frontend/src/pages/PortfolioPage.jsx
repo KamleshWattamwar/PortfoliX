@@ -118,31 +118,92 @@ export default function PortfolioPage() {
           {/* Summary Cards */}
           <SummaryCards summary={liveSummary} risk={risk} />
 
-          {/* Allocation Donut & Holdings Table in split or vertical layout */}
+          {/* Allocation & Risk Intelligence Row */}
           <div className="analytics-grid">
             <AllocationPieChart 
               weights={risk?.weights} 
               summaryHoldings={summary?.holdings} 
             />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div className="glass-panel" style={{ padding: '1.25rem 1.5rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: '700', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
-                  Portfolio Overview
+
+            {/* Orion-inspired Executive Intelligence Card */}
+            <div className="glass-panel" style={{ padding: '2.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                  <span style={{ fontSize: '0.82rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2563eb' }}>
+                    Portfolio Intelligence
+                  </span>
+                  <span className="badge badge-neutral" style={{ fontSize: '0.78rem', padding: '0.3rem 0.65rem' }}>
+                    Benchmark: ^NSEI
+                  </span>
+                </div>
+
+                <h3 style={{ fontSize: '1.45rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.02em', marginBottom: '0.75rem', lineHeight: 1.3 }}>
+                  Run Stress Testing & Risk Analytics
                 </h3>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-                  Track your equity portfolio's market value, unrealized returns, and single-stock capital allocation. Use the <strong>Risk Metrics</strong> tab to inspect Beta vs NIFTY 50 and volatility.
+                <p style={{ fontSize: '0.98rem', color: '#475569', lineHeight: '1.65', marginBottom: '1.5rem' }}>
+                  Evaluate downside vulnerability against the Indian broader market. PortfoliX calculates annualized volatility, beta sensitivity against NIFTY 50, and 1-year peak-to-trough drawdowns using historical daily prices.
                 </p>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', padding: '1.25rem 1.4rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '1.5rem' }}>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Active Assets</div>
+                    <div className="mono-text" style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0f172a', marginTop: '0.15rem' }}>
+                      {summary?.holdings_count || 0}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Market Feed</div>
+                    <div style={{ fontSize: '0.98rem', fontWeight: '800', color: '#16a34a', marginTop: '0.3rem' }}>
+                      NSE / BSE
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Risk Horizon</div>
+                    <div style={{ fontSize: '0.98rem', fontWeight: '800', color: '#2563eb', marginTop: '0.3rem' }}>
+                      252 Trading Days
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {liveHoldings && (
-                <HoldingsTable
-                holdings={liveHoldings}
-                onDelete={deleteHoldingByTicker}
-                loading={actionLoading}
-                />
-)}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.75rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <a 
+                  href="/risk" 
+                  style={{ 
+                    display: 'inline-flex', 
+                    alignItems: 'center', 
+                    gap: '0.5rem', 
+                    color: '#2563eb', 
+                    fontWeight: 800, 
+                    fontSize: '0.98rem', 
+                    textDecoration: 'none' 
+                  }}
+                >
+                  Explore Risk Analytics →
+                </a>
+                <a 
+                  href="/faq" 
+                  style={{ 
+                    fontSize: '0.88rem', 
+                    color: '#64748b', 
+                    textDecoration: 'none',
+                    fontWeight: 600
+                  }}
+                >
+                  Methodology Guide
+                </a>
+              </div>
             </div>
           </div>
+
+          {/* Full-width Holdings Table */}
+          {liveHoldings && (
+            <HoldingsTable
+              holdings={liveHoldings}
+              onDelete={deleteHoldingByTicker}
+              loading={actionLoading}
+            />
+          )}
         </>
       )}
     </div>

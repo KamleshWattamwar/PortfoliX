@@ -8,6 +8,7 @@ import {
   Zap, 
   BarChart2 
 } from 'lucide-react';
+import MetricHelp from './MetricHelp';
 
 const formatINR = (val) => {
   if (val === undefined || val === null || isNaN(val)) return '₹0.00';
@@ -33,113 +34,118 @@ export default function SummaryCards({ summary, risk }) {
     <div className="summary-grid">
       
       {/* 1. Total Invested */}
-      <div className="glass-panel" style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div className="glass-panel" style={{ padding: '1.85rem 2.1rem', display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
             Total Invested
           </span>
-          <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(99, 102, 241, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Wallet size={16} color="var(--accent-indigo)" />
+          <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#eff6ff', border: '1px solid #dbeafe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Wallet size={22} color="#2563eb" />
           </div>
         </div>
         <div>
-          <div className="mono-text" style={{ fontSize: '1.6rem', fontWeight: '800', color: 'var(--text-primary)' }}>
+          <div className="mono-text" style={{ fontSize: '2.35rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.025em', lineHeight: 1.15 }}>
             {formatINR(summary.total_invested)}
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-            Across {summary.holdings_count} position{summary.holdings_count === 1 ? '' : 's'}
+          <div style={{ fontSize: '0.88rem', color: '#64748b', marginTop: '0.45rem', fontWeight: 500 }}>
+            Across {summary.holdings_count} active position{summary.holdings_count === 1 ? '' : 's'}
           </div>
         </div>
       </div>
 
       {/* 2. Current Market Value */}
-      <div className="glass-panel" style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div className="glass-panel" style={{ padding: '1.85rem 2.1rem', display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
             Current Value
           </span>
-          <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(6, 182, 212, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <BarChart2 size={16} color="var(--accent-cyan)" />
+          <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#eff6ff', border: '1px solid #dbeafe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <BarChart2 size={22} color="#2563eb" />
           </div>
         </div>
         <div>
-          <div className="mono-text" style={{ fontSize: '1.6rem', fontWeight: '800', color: 'var(--text-primary)' }}>
+          <div className="mono-text" style={{ fontSize: '2.35rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.025em', lineHeight: 1.15 }}>
             {formatINR(summary.total_current_value)}
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+          <div style={{ fontSize: '0.88rem', color: '#64748b', marginTop: '0.45rem', fontWeight: 500 }}>
             Live market valuation
           </div>
         </div>
       </div>
 
       {/* 3. Total Unrealized P&L */}
-      <div className="glass-panel" style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div className="glass-panel" style={{ padding: '1.85rem 2.1rem', display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
             Unrealized P&L
           </span>
           <div style={{ 
-            width: '32px', 
-            height: '32px', 
-            borderRadius: '8px', 
-            background: isProfitable ? 'rgba(16, 185, 129, 0.15)' : 'rgba(244, 63, 94, 0.15)', 
+            width: '46px', 
+            height: '46px', 
+            borderRadius: '12px', 
+            background: isProfitable ? '#f0fdf4' : '#fef2f2', 
+            border: `1px solid ${isProfitable ? '#bbf7d0' : '#fecaca'}`,
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center' 
           }}>
             {isProfitable ? (
-              <TrendingUp size={16} color="var(--accent-emerald)" />
+              <TrendingUp size={22} color="#16a34a" />
             ) : (
-              <TrendingDown size={16} color="var(--accent-rose)" />
+              <TrendingDown size={22} color="#dc2626" />
             )}
           </div>
         </div>
         <div>
           <div className="mono-text" style={{ 
-            fontSize: '1.6rem', 
+            fontSize: '2.35rem', 
             fontWeight: '800', 
-            color: isProfitable ? 'var(--accent-emerald)' : 'var(--accent-rose)' 
+            color: isProfitable ? '#15803d' : '#b91c1c',
+            letterSpacing: '-0.025em',
+            lineHeight: 1.15
           }}>
             {formatINR(summary.total_pnl)}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.3rem' }}>
-            <span className={`badge ${isProfitable ? 'badge-positive' : 'badge-negative'}`}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginTop: '0.45rem' }}>
+            <span className={`badge ${isProfitable ? 'badge-positive' : 'badge-negative'}`} style={{ fontSize: '0.82rem', padding: '0.25rem 0.6rem' }}>
               {pnlPercentFormatted}
             </span>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>overall returns</span>
+            <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>overall returns</span>
           </div>
         </div>
       </div>
 
       {/* 4. Portfolio Beta & Sharpe Ratio */}
-      <div className="glass-panel" style={{ padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div className="glass-panel" style={{ padding: '1.85rem 2.1rem', display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
             Portfolio Risk Index
           </span>
-          <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(139, 92, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Activity size={16} color="var(--accent-violet)" />
+          <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: '#eff6ff', border: '1px solid #dbeafe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Activity size={22} color="#2563eb" />
           </div>
         </div>
         
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', paddingTop: '0.2rem' }}>
           <div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Beta vs NIFTY</div>
-            <div className="mono-text" style={{ fontSize: '1.3rem', fontWeight: '800', color: 'var(--text-primary)' }}>
+            <div style={{ fontSize: '0.78rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+              Beta vs NIFTY <MetricHelp title="Portfolio Beta" body="Sensitivity to NIFTY 50. >1.1 = aggressive, <0.9 = defensive." faqId="beta" />
+            </div>
+            <div className="mono-text" style={{ fontSize: '1.9rem', fontWeight: '800', color: '#0f172a', marginTop: '0.2rem', lineHeight: 1.15 }}>
               {beta.toFixed(2)}
             </div>
-            <div style={{ fontSize: '0.7rem', color: beta > 1.1 ? '#fbbf24' : beta < 0.9 ? '#34d399' : '#94a3b8' }}>
-              {beta > 1.1 ? 'High Sensitivity' : beta < 0.9 ? 'Defensive' : 'Market Neutral'}
+            <div style={{ fontSize: '0.82rem', fontWeight: 700, marginTop: '0.2rem', color: beta > 1.1 ? '#dc2626' : beta < 0.9 ? '#16a34a' : '#2563eb' }}>
+              {beta > 1.1 ? 'Aggressive' : beta < 0.9 ? 'Defensive' : 'Market Neutral'}
             </div>
           </div>
 
           <div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Sharpe Ratio</div>
-            <div className="mono-text" style={{ fontSize: '1.3rem', fontWeight: '800', color: sharpe > 1.0 ? 'var(--accent-emerald)' : 'var(--text-primary)' }}>
+            <div style={{ fontSize: '0.78rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Sharpe Ratio</div>
+            <div className="mono-text" style={{ fontSize: '1.9rem', fontWeight: '800', marginTop: '0.2rem', lineHeight: 1.15, color: sharpe > 1.0 ? '#15803d' : sharpe < 0 ? '#b91c1c' : '#0f172a' }}>
               {sharpe.toFixed(2)}
             </div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-              Vol: {vol} | Max DD: {mdd}
+            <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem', fontWeight: 600 }}>
+              Vol: {vol} | MDD: {mdd}
             </div>
           </div>
         </div>

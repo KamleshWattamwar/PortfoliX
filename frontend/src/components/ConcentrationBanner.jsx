@@ -6,40 +6,41 @@ export default function ConcentrationBanner({ warnings }) {
 
   return (
     <div style={{
-      background: 'linear-gradient(90deg, rgba(245, 158, 11, 0.15), rgba(244, 63, 94, 0.1))',
-      border: '1px solid rgba(245, 158, 11, 0.4)',
-      borderRadius: '14px',
-      padding: '1rem 1.25rem',
+      background: '#fef2f2',
+      border: '1px solid #fecaca',
+      borderRadius: '12px',
+      padding: '1.35rem 1.6rem',
       display: 'flex',
       alignItems: 'center',
-      gap: '1rem',
-      boxShadow: '0 4px 20px rgba(245, 158, 11, 0.1)',
-      animation: 'fadeIn 0.3s ease-out'
+      gap: '1.25rem',
+      boxShadow: '0 1px 3px rgba(220, 38, 38, 0.08)',
+      animation: 'fadeIn 0.2s ease-out'
     }}>
       <div style={{
-        width: '36px',
-        height: '36px',
-        borderRadius: '10px',
-        background: 'rgba(245, 158, 11, 0.2)',
+        width: '44px',
+        height: '44px',
+        borderRadius: '12px',
+        background: '#fee2e2',
+        border: '1px solid #fca5a5',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         flexShrink: 0
       }}>
-        <AlertTriangle size={20} color="#fbbf24" />
+        <AlertTriangle size={24} color="#dc2626" />
       </div>
 
       <div style={{ flex: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
-          <span style={{ fontSize: '0.875rem', fontWeight: '700', color: '#fbbf24' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem' }}>
+          <span style={{ fontSize: '1.05rem', fontWeight: '800', color: '#b91c1c' }}>
             Portfolio Concentration Alert (&gt;30% Allocation Limit)
           </span>
-          <span className="badge badge-warning" style={{ fontSize: '0.65rem' }}>
+          <span className="badge badge-negative" style={{ fontSize: '0.78rem', padding: '0.2rem 0.55rem' }}>
             Risk Factor
           </span>
         </div>
         
-        <div style={{ fontSize: '0.8rem', color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+        <div style={{ fontSize: '0.92rem', color: '#7f1d1d', display: 'flex', flexDirection: 'column', gap: '0.3rem', lineHeight: '1.6' }}>
           {warnings.map((w, idx) => (
             <div key={idx}>
               <strong>{w.ticker}</strong> represents <strong>{(w.weight * 100).toFixed(1)}%</strong> of your total portfolio value. Overconcentration in a single asset significantly amplifies unsystematic risk.

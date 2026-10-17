@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Link, Outlet, useLocation } from 'react-router-dom';
 import { 
   TrendingUp, 
   PieChart, 
@@ -14,7 +14,8 @@ import {
   ShieldCheck,
   ChevronRight,
   LogOut,
-  User
+  User,
+  BookOpen
 } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
 import { useAuth } from '../context/AuthContext';
@@ -70,6 +71,12 @@ export default function DashboardLayout() {
       icon: <TrendingDown size={18} />,
       desc: 'Historical Peak Falls'
     },
+    {
+      to: '/faq',
+      label: 'Risk FAQ',
+      icon: <BookOpen size={18} />,
+      desc: 'Understand Your Metrics'
+    },
   ];
 
   return (
@@ -80,21 +87,20 @@ export default function DashboardLayout() {
         
         {/* Brand Header */}
         <div className="sidebar-brand">
-          <div className="brand-logo-box">
-            <TrendingUp size={22} color="#ffffff" strokeWidth={2.5} />
-          </div>
-          <div>
-            <div className="brand-title">
-              Portfoli<span>X</span>
-            </div>
-            <div className="brand-subtitle">Risk Analytics Engine</div>
-          </div>
+          <Link to="/portfolio" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
+            <img 
+              src="/portfolix-logo.png" 
+              alt="PortfoliX" 
+              className="sidebar-logo-img" 
+              style={{ height: '58px', width: 'auto', maxWidth: '245px', objectFit: 'contain' }}
+            />
+          </Link>
         </div>
 
         {/* Market Badge */}
         <div className="sidebar-market-badge">
           <span className="live-dot"></span>
-          <span>NSE / BSE • NIFTY 50</span>
+          <span>NSE / BSE • NIFTY 50 LIVE</span>
         </div>
 
         {/* Navigation Items */}
@@ -146,7 +152,7 @@ export default function DashboardLayout() {
           {!hasHoldings ? (
             <button
               className="btn btn-secondary btn-sm"
-              style={{ width: '100%', background: 'rgba(99, 102, 241, 0.15)', borderColor: 'rgba(99, 102, 241, 0.3)', color: '#a5b4fc', marginTop: '0.6rem' }}
+              style={{ width: '100%', background: '#eff6ff', borderColor: '#bfdbfe', color: '#1d4ed8', marginTop: '0.6rem', fontWeight: 600 }}
               onClick={loadDemo}
               disabled={actionLoading}
             >
@@ -178,6 +184,7 @@ export default function DashboardLayout() {
               {location.pathname === '/risk' && 'Quantitative Risk Metrics'}
               {location.pathname === '/correlation' && 'Cross-Asset Correlation Matrix'}
               {location.pathname === '/drawdown' && 'Historical Portfolio Drawdown'}
+              {location.pathname === '/faq' && 'Risk Metrics — FAQ & Guide'}
               {(location.pathname === '/portfolio' || location.pathname === '/') && 'Portfolio Holdings & Allocation'}
             </h2>
           </div>
@@ -196,7 +203,7 @@ export default function DashboardLayout() {
             {!hasHoldings && (
               <button 
                 className="btn btn-secondary btn-sm"
-                style={{ background: 'rgba(99, 102, 241, 0.15)', borderColor: 'rgba(99, 102, 241, 0.3)', color: '#a5b4fc' }}
+                style={{ background: '#eff6ff', borderColor: '#bfdbfe', color: '#1d4ed8', fontWeight: 600 }}
                 onClick={loadDemo}
                 disabled={actionLoading}
               >

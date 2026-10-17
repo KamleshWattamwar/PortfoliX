@@ -105,12 +105,12 @@ export default function AuthPage() {
         
         {/* Brand Header */}
         <div className="auth-brand-section">
-          <div className="auth-logo-box">
-            <TrendingUp size={28} color="#ffffff" strokeWidth={2.5} />
-          </div>
-          <h1 className="auth-title">
-            Portfoli<span>X</span>
-          </h1>
+          <img 
+            src="/portfolix-logo.png" 
+            alt="PortfoliX" 
+            className="auth-logo-img" 
+            style={{ height: '62px', width: 'auto', maxWidth: '280px', objectFit: 'contain', marginBottom: '0.85rem' }} 
+          />
           <p className="auth-subtitle">Quantitative Portfolio Risk & Analytics Engine</p>
           <div className="auth-badge">
             <span className="live-dot" />

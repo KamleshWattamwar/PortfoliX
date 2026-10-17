@@ -15,11 +15,11 @@ export default function RiskTable({ perStock, benchmark = '^NSEI' }) {
     <div className="glass-panel">
       <div className="panel-header">
         <div className="panel-title">
-          <Gauge size={18} color="var(--accent-violet)" />
+          <Gauge size={22} color="#2563eb" />
           Per-Stock Quantitative Risk Metrics
         </div>
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-          Benchmark: NIFTY 50 ({benchmark}) • 1-Yr Lookback
+        <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>
+          Benchmark: NIFTY 50 ({benchmark}) • 1-Yr Historical Lookback
         </span>
       </div>
 
@@ -45,33 +45,33 @@ export default function RiskTable({ perStock, benchmark = '^NSEI' }) {
               return (
                 <tr key={stock.ticker}>
                   <td>
-                    <span className="mono-text" style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '0.9rem' }}>
+                    <span className="mono-text" style={{ fontWeight: '800', color: '#0f172a', fontSize: '1.05rem' }}>
                       {stock.ticker}
                     </span>
                   </td>
 
-                  <td className="mono-text" style={{ textAlign: 'right', fontWeight: '600', color: 'var(--text-secondary)' }}>
+                  <td className="mono-text" style={{ textAlign: 'right', fontWeight: '700', color: '#475569', fontSize: '1.02rem' }}>
                     {(stock.weight * 100).toFixed(1)}%
                   </td>
 
-                  <td className="mono-text" style={{ textAlign: 'right', fontWeight: '600' }}>
+                  <td className="mono-text" style={{ textAlign: 'right', fontWeight: '700', color: '#0f172a', fontSize: '1.02rem' }}>
                     {(stock.volatility * 100).toFixed(1)}%
                   </td>
 
-                  <td className="mono-text" style={{ textAlign: 'right', fontWeight: '700', color: stock.beta > 1.2 ? '#fca5a5' : stock.beta < 0.9 ? '#86efac' : 'var(--text-primary)' }}>
+                  <td className="mono-text" style={{ textAlign: 'right', fontWeight: '800', color: stock.beta > 1.2 ? '#dc2626' : stock.beta < 0.9 ? '#16a34a' : '#0f172a', fontSize: '1.02rem' }}>
                     {stock.beta.toFixed(2)}
                   </td>
 
-                  <td className="mono-text" style={{ textAlign: 'right', fontWeight: '700', color: isHighSharpe ? 'var(--accent-emerald)' : isNegativeSharpe ? 'var(--accent-rose)' : 'var(--text-primary)' }}>
+                  <td className="mono-text" style={{ textAlign: 'right', fontWeight: '800', color: isHighSharpe ? '#16a34a' : isNegativeSharpe ? '#dc2626' : '#0f172a', fontSize: '1.02rem' }}>
                     {stock.sharpe_ratio.toFixed(2)}
                   </td>
 
-                  <td className="mono-text" style={{ textAlign: 'right', fontWeight: '600', color: 'var(--accent-rose)' }}>
+                  <td className="mono-text" style={{ textAlign: 'right', fontWeight: '700', color: '#dc2626', fontSize: '1.02rem' }}>
                     {(stock.max_drawdown * 100).toFixed(1)}%
                   </td>
 
                   <td style={{ textAlign: 'center' }}>
-                    <span className={`badge ${profile.color}`} style={{ fontSize: '0.7rem' }}>
+                    <span className={`badge ${profile.color}`} style={{ fontSize: '0.82rem', padding: '0.3rem 0.65rem' }}>
                       {profile.label}
                     </span>
                   </td>

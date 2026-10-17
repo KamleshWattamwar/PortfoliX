@@ -4,6 +4,7 @@ import { usePortfolio } from '../context/PortfolioContext';
 import CorrelationHeatmap from '../components/CorrelationHeatmap';
 import EmptyState from '../components/EmptyState';
 import { RefreshCw, AlertCircle, Grid, HelpCircle, Layers } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function CorrelationPage() {
   const { hasHoldings, refreshTrigger, loadDemo, actionLoading } = usePortfolio();
@@ -71,30 +72,39 @@ export default function CorrelationPage() {
           />
 
           {/* Educational / Insight Card */}
-          <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(6, 182, 212, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Layers size={18} color="var(--accent-cyan)" />
+          <div className="glass-panel" style={{ padding: '2rem 2.25rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#eff6ff', border: '1px solid #bfdbfe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Layers size={22} color="#2563eb" />
               </div>
-              <h3 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a' }}>
                 Understanding Portfolio Diversification & Correlation
               </h3>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem', fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-              <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '1rem', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
-                <strong style={{ color: '#6ee7b7', display: 'block', marginBottom: '0.2rem' }}>
-                  Low / Negative Correlation (&lt; 0.3)
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', fontSize: '0.95rem', lineHeight: '1.65' }}>
+              <div style={{ background: '#f0fdf4', padding: '1.4rem 1.5rem', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
+                <strong style={{ color: '#15803d', display: 'block', marginBottom: '0.35rem', fontWeight: 800, fontSize: '1.02rem' }}>
+                  Low / Negative Correlation (&lt; 0.3) • Diversification Benefit
                 </strong>
-                Assets move independently or in opposite directions. Adding low-correlation assets significantly lowers aggregate portfolio volatility without sacrificing expected return (Markowitz Modern Portfolio Theory).
+                <span style={{ color: '#166534' }}>
+                  Assets move independently or in opposite directions. Adding low-correlation assets significantly lowers aggregate portfolio volatility without sacrificing expected return (Markowitz Modern Portfolio Theory).
+                </span>
               </div>
 
-              <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '1rem', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
-                <strong style={{ color: '#fca5a5', display: 'block', marginBottom: '0.2rem' }}>
-                  High Positive Correlation (&gt; 0.7)
+              <div style={{ background: '#fef2f2', padding: '1.4rem 1.5rem', borderRadius: '12px', border: '1px solid #fecaca' }}>
+                <strong style={{ color: '#b91c1c', display: 'block', marginBottom: '0.35rem', fontWeight: 800, fontSize: '1.02rem' }}>
+                  High Positive Correlation (&gt; 0.7) • Concentration Risk
                 </strong>
-                Assets tend to move together (e.g. peer tech giants TCS & Infosys, or banking peers HDFC & ICICI). High intra-portfolio correlation reduces diversification and increases drawdown vulnerability during sector downturns.
+                <span style={{ color: '#991b1b' }}>
+                  Assets tend to move together (e.g. peer tech giants TCS & Infosys, or banking peers HDFC & ICICI). High intra-portfolio correlation reduces diversification and increases drawdown vulnerability during sector downturns.
+                </span>
               </div>
+            </div>
+            <div style={{ marginTop: '0.5rem', paddingTop: '0.9rem', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
+              <Link to="/faq" style={{ fontSize: '0.92rem', color: '#2563eb', fontWeight: '800', textDecoration: 'none' }}>
+                Understand correlation in detail in our Risk FAQ →
+              </Link>
             </div>
           </div>
         </>

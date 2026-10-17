@@ -10,6 +10,7 @@ import PortfolioPage from './pages/PortfolioPage';
 import RiskPage from './pages/RiskPage';
 import CorrelationPage from './pages/CorrelationPage';
 import DrawdownPage from './pages/DrawdownPage';
+import FAQPage from './pages/FAQPage';
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
               <Route path="risk" element={<RiskPage />} />
               <Route path="correlation" element={<CorrelationPage />} />
               <Route path="drawdown" element={<DrawdownPage />} />
+              <Route path="faq" element={<FAQPage />} />
             </Route>
 
             {/* Catch-all fallback */}

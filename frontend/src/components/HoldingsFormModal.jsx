@@ -175,37 +175,37 @@ export default function HoldingsFormModal({ isOpen, onClose, onAddHolding, loadi
         {/* Header */}
         <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(99, 102, 241, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Plus size={18} color="var(--accent-indigo)" />
+            <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: 'rgba(37, 99, 235, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Plus size={20} color="#2563eb" />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: '700', margin: 0 }}>Add Stock Position</h3>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>Instant ticker lookup with live NSE/BSE pricing</p>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: '800', margin: 0, color: '#0f172a' }}>Add Stock Position</h3>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0, marginTop: '2px' }}>Instant ticker lookup with live NSE/BSE pricing</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
+            style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '6px' }}
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} style={{ padding: '1.5rem' }}>
+        <form onSubmit={handleSubmit} style={{ padding: '1.75rem' }}>
           
           {error && (
-            <div className="badge badge-negative" style={{ width: '100%', padding: '0.7rem 0.9rem', marginBottom: '1.2rem', fontSize: '0.8rem', lineHeight: '1.4' }}>
+            <div className="badge badge-negative" style={{ width: '100%', padding: '0.85rem 1rem', marginBottom: '1.25rem', fontSize: '0.88rem', lineHeight: '1.5' }}>
               {error}
             </div>
           )}
 
           {/* Quick symbol picker */}
-          <div style={{ marginBottom: '1.25rem' }}>
-            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.45rem', fontWeight: 500 }}>
+          <div style={{ marginBottom: '1.35rem' }}>
+            <label style={{ fontSize: '0.85rem', color: '#475569', display: 'block', marginBottom: '0.55rem', fontWeight: 600 }}>
               Popular Indian Stocks:
             </label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
               {QUICK_TICKERS.map((item) => {
                 const isSelected = ticker === item.symbol || ticker === item.label;
                 return (
@@ -214,15 +214,15 @@ export default function HoldingsFormModal({ isOpen, onClose, onAddHolding, loadi
                     type="button"
                     onClick={() => handleQuickSelect(item)}
                     style={{
-                      background: isSelected ? 'var(--accent-indigo)' : 'rgba(255, 255, 255, 0.04)',
-                      color: isSelected ? '#fff' : 'var(--text-secondary)',
-                      border: `1px solid ${isSelected ? 'var(--accent-indigo)' : 'var(--border-subtle)'}`,
-                      borderRadius: '6px',
-                      padding: '0.25rem 0.6rem',
-                      fontSize: '0.72rem',
+                      background: isSelected ? '#2563eb' : '#f8fafc',
+                      color: isSelected ? '#ffffff' : '#334155',
+                      border: `1px solid ${isSelected ? '#2563eb' : '#cbd5e1'}`,
+                      borderRadius: '8px',
+                      padding: '0.35rem 0.75rem',
+                      fontSize: '0.82rem',
                       cursor: 'pointer',
                       fontFamily: 'var(--font-mono)',
-                      fontWeight: isSelected ? 600 : 400,
+                      fontWeight: isSelected ? 700 : 500,
                       transition: 'all 0.15s ease',
                     }}
                   >
@@ -238,7 +238,7 @@ export default function HoldingsFormModal({ isOpen, onClose, onAddHolding, loadi
             <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>Stock Symbol or Company Name *</span>
               {selectedStock && (
-                <span style={{ fontSize: '0.7rem', color: 'var(--accent-green)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ fontSize: '0.72rem', color: '#16a34a', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
                   <CheckCircle2 size={12} /> Verified Symbol
                 </span>
               )}
@@ -259,19 +259,19 @@ export default function HoldingsFormModal({ isOpen, onClose, onAddHolding, loadi
                 autoComplete="off"
                 style={{
                   paddingRight: '2.5rem',
-                  borderColor: selectedStock ? 'rgba(34, 197, 94, 0.5)' : undefined,
+                  borderColor: selectedStock ? '#16a34a' : undefined,
                 }}
               />
-              <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', color: 'var(--text-muted)' }}>
+              <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', display: 'flex', alignItems: 'center', color: '#64748b' }}>
                 {isSearching ? <Loader2 size={16} className="spin" /> : <Search size={16} />}
               </div>
             </div>
 
             {/* Selected stock confirmation pill */}
             {selectedStock && (
-              <div style={{ marginTop: '0.4rem', padding: '0.35rem 0.65rem', background: 'rgba(34, 197, 94, 0.08)', border: '1px solid rgba(34, 197, 94, 0.2)', borderRadius: '6px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{selectedStock.name}</span>
-                <span style={{ color: 'var(--accent-green)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{selectedStock.symbol} ({selectedStock.exchange || 'NSE'})</span>
+              <div style={{ marginTop: '0.4rem', padding: '0.4rem 0.75rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '6px', fontSize: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ color: '#0f172a', fontWeight: 600 }}>{selectedStock.name}</span>
+                <span style={{ color: '#16a34a', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{selectedStock.symbol} ({selectedStock.exchange || 'NSE'})</span>
               </div>
             )}
 
@@ -283,10 +283,10 @@ export default function HoldingsFormModal({ isOpen, onClose, onAddHolding, loadi
                 left: 0,
                 right: 0,
                 marginTop: '4px',
-                background: '#131722',
-                border: '1px solid var(--border-subtle)',
+                background: '#ffffff',
+                border: '1px solid #cbd5e1',
                 borderRadius: '8px',
-                boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+                boxShadow: '0 12px 28px -4px rgba(15, 23, 42, 0.15)',
                 zIndex: 100,
                 maxHeight: '220px',
                 overflowY: 'auto',
@@ -299,23 +299,23 @@ export default function HoldingsFormModal({ isOpen, onClose, onAddHolding, loadi
                       onClick={() => handleSelectSuggestion(item)}
                       onMouseEnter={() => setHighlightedIndex(idx)}
                       style={{
-                        padding: '0.6rem 0.9rem',
+                        padding: '0.65rem 0.9rem',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         cursor: 'pointer',
-                        background: isHighlighted ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
-                        borderBottom: idx < suggestions.length - 1 ? '1px solid rgba(255, 255, 255, 0.05)' : 'none',
+                        background: isHighlighted ? '#eff6ff' : 'transparent',
+                        borderBottom: idx < suggestions.length - 1 ? '1px solid #f1f5f9' : 'none',
                         transition: 'background 0.1s ease',
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', overflow: 'hidden' }}>
-                        <Building2 size={15} color="var(--text-muted)" style={{ flexShrink: 0 }} />
+                        <Building2 size={15} color="#64748b" style={{ flexShrink: 0 }} />
                         <div style={{ overflow: 'hidden' }}>
-                          <div style={{ color: '#fff', fontSize: '0.82rem', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+                          <div style={{ color: '#0f172a', fontSize: '0.85rem', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
                             {item.symbol}
                           </div>
-                          <div style={{ color: 'var(--text-muted)', fontSize: '0.72rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <div style={{ color: '#64748b', fontSize: '0.75rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {item.name}
                           </div>
                         </div>
@@ -323,12 +323,12 @@ export default function HoldingsFormModal({ isOpen, onClose, onAddHolding, loadi
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}>
                         <span style={{
-                          fontSize: '0.65rem',
-                          padding: '0.15rem 0.4rem',
+                          fontSize: '0.68rem',
+                          padding: '0.15rem 0.45rem',
                           borderRadius: '4px',
-                          background: item.exchange === 'NSE' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(234, 179, 8, 0.15)',
-                          color: item.exchange === 'NSE' ? '#60a5fa' : '#facc15',
-                          fontWeight: 600,
+                          background: item.exchange === 'NSE' ? '#eff6ff' : '#fffbeb',
+                          color: item.exchange === 'NSE' ? '#1d4ed8' : '#b45309',
+                          fontWeight: 700,
                           fontFamily: 'var(--font-mono)',
                         }}>
                           {item.exchange || 'NSE'}
