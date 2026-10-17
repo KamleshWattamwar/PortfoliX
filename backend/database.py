@@ -3,15 +3,23 @@ Database configuration for PortfoliX.
 Uses SQLite for local zero-config persistence.
 """
 
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./portfolio.db"
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./portfolio.db")
 
-# connect_args={"check_same_thread": False} is required for SQLite in FastAPI
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+# Cloud providers like Render/Heroku often provide postgres:// which SQLAlchemy deprecated in favor of postgresql://
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+if DATABASE_URL.startswith("sqlite"):
+    # connect_args={"check_same_thread": False} is required for SQLite in FastAPI
+    engine = create_engine(
+        DATABASE_URL, connect_args={"check_same_thread": False}
+    )
+else:
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
