@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { 
-  TrendingUp, 
-  Lock, 
-  Mail, 
-  Eye, 
-  EyeOff, 
-  ArrowRight, 
-  ShieldCheck, 
-  Sparkles, 
-  Activity, 
-  BarChart3, 
-  PieChart, 
+import {
+  TrendingUp,
+  Lock,
+  Mail,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  ShieldCheck,
+  Sparkles,
+  Activity,
+  BarChart3,
+  PieChart,
   AlertCircle,
   CheckCircle2
 } from 'lucide-react';
@@ -102,14 +102,14 @@ export default function AuthPage() {
       <div className="auth-glow auth-glow-2" />
 
       <div className="auth-card-container">
-        
+
         {/* Brand Header */}
         <div className="auth-brand-section">
-          <img 
-            src="/portfolix-logo.png" 
-            alt="PortfoliX" 
-            className="auth-logo-img" 
-            style={{ height: '62px', width: 'auto', maxWidth: '280px', objectFit: 'contain', marginBottom: '0.85rem' }} 
+          <img
+            src="/portfolix-logo.png"
+            alt="PortfoliX"
+            className="auth-logo-img"
+            style={{ height: '62px', width: 'auto', maxWidth: '280px', objectFit: 'contain', marginBottom: '0.85rem' }}
           />
           <p className="auth-subtitle">Quantitative Portfolio Risk & Analytics Engine</p>
           <div className="auth-badge">
@@ -120,7 +120,7 @@ export default function AuthPage() {
 
         {/* Main Card */}
         <div className="glass-panel auth-card">
-          
+
           {/* Tab Switcher */}
           <div className="auth-tabs">
             <button
@@ -157,7 +157,7 @@ export default function AuthPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="auth-form">
-            
+
             {/* Email Field */}
             <div className="form-group">
               <label className="form-label" htmlFor="auth-email">
